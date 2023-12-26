@@ -11,21 +11,27 @@ export default class FilmBoardPresenter {
   filmsComponent = new FilmsComponentView();
   filmsList = new FilmsListView();
   filmListContainer = new FilmListContainerView();
+  popupFilmInfoView = new PopupFilmInfoView();
 
-  init(boardContainer) {
+
+  init(boardContainer, filmsModel, commentsModel) {
     this.boardContainer = boardContainer;
+    this.filmsModel = filmsModel;
+    this.commentsModel = commentsModel;
+    this.films = [...this.filmsModel.getFilms()];
+    this.comments = [...this.commentsModel.getComments()];
 
     render(new FilmSortView(), boardContainer);
     render(this.filmsComponent, boardContainer);
     render(this.filmsList, this.filmsComponent.getElement());
     render(this.filmListContainer, this.filmsList.getElement());
 
-    for(let i = 0; i < 5; i++) {
-      render(new FilmCartView(), this.filmListContainer.getElement());
+    for(let i = 1; i < this.films.length; i++) {
+      render(new FilmCartView(this.films[i]), this.filmListContainer.getElement());
     }
 
     render(new ButtonShowMoreView(), this.filmsList.getElement());
-    render(new PopupFilmInfoView(), document.querySelector('body'));
+    render(new PopupFilmInfoView(this.films[0], this.comments), this.boardContainer.parentElement);
   }
 
 }
