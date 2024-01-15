@@ -45,7 +45,7 @@ const getIdFilm = () => {
 }
 
 const commentsModel = new CommentsModel();
-const comments = [...commentsModel.getComments()];
+const comments = [...commentsModel.comments];
 
 const hasComments = comments.length > 0;
 
