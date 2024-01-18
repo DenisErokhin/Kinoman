@@ -7,39 +7,79 @@ import PopupFilmInfoView from '../view/popup-film-info-view.js';
 import FilmSortView from '../view/film-sort-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 
+const FILM_COUNT_PER_STEP = 5;
+
+const TextTitle = {
+  ALL_MOVIES: 'There are no movies in our database',
+  WATCHLIST: 'There are no movies to watch now',
+  HISTORY: 'There are no watched movies now',
+  FAVORITE: 'There are no favorite movies now',
+};
+
 export default class FilmBoardPresenter {
   #boardContainer = null;
   #filmsModel = null;
   #commentsModel = null;
   #filmCartDetails = null;
-
+  #renderedFilmCount = FILM_COUNT_PER_STEP;
   #filmsComponent = new FilmsComponentView();
   #filmsList = new FilmsListView();
   #filmListContainer = new FilmListContainerView();
-
+  #buttonShowMore = new ButtonShowMoreView();
   #films = [];
-  #comments = [];
 
-
-  init(boardContainer, filmsModel, commentsModel) {
+  constructor(boardContainer, filmsModel, commentsModel) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
+  }
+
+  init() {
     this.#films = [...this.#filmsModel.films];
-    this.#comments = [...this.#commentsModel.comments];
+    this.#renderFilmBoard();
+  }
 
-
+  #renderFilmBoard() {
     render(new FilmSortView(), this.#boardContainer);
     render(this.#filmsComponent, this.#boardContainer);
     render(this.#filmsList, this.#filmsComponent.element);
-    render(this.#filmListContainer, this.#filmsList.element);
 
-    for(let i = 0; i < this.#films.length; i++) {
+
+    if (this.#films.length) {
+      render(this.#filmListContainer, this.#filmsList.element);
+
+      for (let i = 0; i < Math.min(this.#films.length, FILM_COUNT_PER_STEP); i++) {
+        this.#renderFilm(this.#films[i]);
+      }
+    } else {
+      this._filmListTitle = this.#filmsList.element.querySelector('.films-list__title');
+      this._filmListTitle.classList.remove('visually-hidden');
+      this._filmListTitle.textContent = TextTitle.ALL_MOVIES;
+    }
+
+    if (this.#films.length > FILM_COUNT_PER_STEP) {
+      render(this.#buttonShowMore, this.#filmsList.element);
+      this.#buttonShowMore.element.addEventListener('click', this.#handleLoadMoreButton);
+    }
+  }
+
+  #handleLoadMoreButton = () => {
+    for(let i = this.#renderedFilmCount; i < this.#renderedFilmCount + FILM_COUNT_PER_STEP; i++) {
+      if (i >= this.#films.length) {
+        this.#buttonShowMore.element.remove();
+        this.#buttonShowMore.removeElement();
+        break;
+      }
       this.#renderFilm(this.#films[i]);
     }
 
-    render(new ButtonShowMoreView(), this.#filmsList.element);
-  }
+    this.#renderedFilmCount += FILM_COUNT_PER_STEP;
+
+    if (this.#renderedFilmCount === this.#films.length) {
+      this.#buttonShowMore.element.remove();
+      this.#buttonShowMore.removeElement();
+    }
+  };
 
   #renderFilm(film) {
     const filmCart = new FilmCartView(film);
@@ -53,7 +93,8 @@ export default class FilmBoardPresenter {
   }
 
   #renderFilmDetails(film) {
-    this.#filmCartDetails = new PopupFilmInfoView(film, this.#comments);
+    const comments = [...this.#commentsModel.comments];
+    this.#filmCartDetails = new PopupFilmInfoView(film, comments);
     const buttonCloseFilmDetails = this.#filmCartDetails.element.querySelector('.film-details__close-btn');
     document.querySelector('body').classList.add('hide-overflow');
 
