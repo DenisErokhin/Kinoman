@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { humanizeFilmReleaseDateInYear, getTimeFilm } from '../utils.js';
+import { humanizeFilmReleaseDateInYear, getTimeFilm } from '../utils/task.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilmCartTemplate = (film) => {
   const {comments, filmInfo} = film;
@@ -25,11 +25,11 @@ const createFilmCartTemplate = (film) => {
   </article>`;
 };
 
-export default class FilmCartView {
+export default class FilmCartView extends AbstractView{
   #film = null;
-  #element = null;
 
   constructor(film) {
+    super();
     this.#film = film;
   }
 
@@ -37,15 +37,14 @@ export default class FilmCartView {
     return createFilmCartTemplate(this.#film);
   }
 
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this._filmCartLink = this.element.querySelector('.film-card__link');
+    this._filmCartLink.addEventListener('click', this.#clickHandler);
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

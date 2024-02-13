@@ -1,6 +1,6 @@
-import { createElement } from '../render.js';
-import { createCommentTemplate } from './comment-film-view.js';
-import { humanizeFilmReleaseDate, getTimeFilm } from '../utils.js';
+import { createCommentTemplate } from './comment-film-template.js';
+import { humanizeFilmReleaseDate, getTimeFilm } from '../utils/task.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
@@ -132,12 +132,12 @@ const createPopupInfoTemplate = (film, commentsFilm) => {
 };
 
 
-export default class PopupFilmInfoView {
+export default class PopupFilmInfoView extends AbstractView{
   #film = null;
   #comments = null;
-  #element = null;
 
   constructor(film, comments) {
+    super();
     this.#film = film;
     this.#comments = comments;
   }
@@ -146,15 +146,14 @@ export default class PopupFilmInfoView {
     return createPopupInfoTemplate(this.#film, this.#comments);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this._buttonCloseFilmDetails = this.element.querySelector('.film-details__close-btn');
+    this._buttonCloseFilmDetails.addEventListener('click', this.#clickHandler);
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

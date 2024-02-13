@@ -1,4 +1,4 @@
-import { getRandomInteger } from '../utils';
+import { getRandomInteger } from '../utils/common.js';
 
 const EMOTIONS = ["smile", "sleeping", "puke", "angry"];
 

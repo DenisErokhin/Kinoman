@@ -1,4 +1,5 @@
-import { render } from '../render.js';
+// import { render } from '../render.js';
+import { render, remove } from '../framework/render.js';
 import FilmsComponentView from '../view/films-view.js';
 import FilmsListView from '../view/films-list-view.js';
 import FilmCartView from '../view/film-cart-view.js';
@@ -59,15 +60,14 @@ export default class FilmBoardPresenter {
 
     if (this.#films.length > FILM_COUNT_PER_STEP) {
       render(this.#buttonShowMore, this.#filmsList.element);
-      this.#buttonShowMore.element.addEventListener('click', this.#handleLoadMoreButton);
+      this.#buttonShowMore.setClickHandler(this.#handleLoadMoreButton);
     }
   }
 
   #handleLoadMoreButton = () => {
     for(let i = this.#renderedFilmCount; i < this.#renderedFilmCount + FILM_COUNT_PER_STEP; i++) {
       if (i >= this.#films.length) {
-        this.#buttonShowMore.element.remove();
-        this.#buttonShowMore.removeElement();
+        remove(this.#buttonShowMore);
         break;
       }
       this.#renderFilm(this.#films[i]);
@@ -76,16 +76,13 @@ export default class FilmBoardPresenter {
     this.#renderedFilmCount += FILM_COUNT_PER_STEP;
 
     if (this.#renderedFilmCount === this.#films.length) {
-      this.#buttonShowMore.element.remove();
-      this.#buttonShowMore.removeElement();
+      remove(this.#buttonShowMore);
     }
   };
 
   #renderFilm(film) {
     const filmCart = new FilmCartView(film);
-    const filmCartLink = filmCart.element.querySelector('.film-card__link');
-
-    filmCartLink.addEventListener('click', () => {
+    filmCart.setClickHandler(() => {
       this.#renderFilmDetails(film);
     });
 
@@ -95,19 +92,16 @@ export default class FilmBoardPresenter {
   #renderFilmDetails(film) {
     const comments = [...this.#commentsModel.comments];
     this.#filmCartDetails = new PopupFilmInfoView(film, comments);
-    const buttonCloseFilmDetails = this.#filmCartDetails.element.querySelector('.film-details__close-btn');
+    this.#filmCartDetails.setClickHandler(this.#closeFilmDetails);
+
     document.querySelector('body').classList.add('hide-overflow');
-
-    buttonCloseFilmDetails.addEventListener('click', this.#closeFilmDetails);
     document.addEventListener('keydown', this.#onEscKeyDown);
-
 
     render(this.#filmCartDetails, this.#boardContainer.parentElement);
   }
 
   #closeFilmDetails = () => {
-    this.#filmCartDetails.element.remove();
-    this.#filmCartDetails.removeElement();
+    remove(this.#filmCartDetails);
     document.querySelector('body').classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDown);
   };

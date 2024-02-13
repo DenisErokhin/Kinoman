@@ -1,5 +1,4 @@
-import { createElement } from '../render.js';
-import { humanizeCommentDate } from '../utils.js';
+import { humanizeCommentDate } from '../utils/task.js';
 
 const createComment = (element) => {
   const {author, comment, date, emotion} = element;
@@ -33,23 +32,3 @@ export const createCommentTemplate = (elements) => {
 
   return newCommentsTemplate;
 };
-
-export default class CommentFilmView {
-  #element = null;
-
-  get template() {
-    return createCommentTemplate();
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
-}
