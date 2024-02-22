@@ -69,6 +69,8 @@ const genarateImg = () => {
   return adressesImg[randomIndex];
 }
 
+const getAlreadyWatched = () => Boolean(getRandomInteger(0, 1));
+
 export const generateFilm = () => ({
   "id": getIdFilm(),
   "comments": hasComments ? idComments : [],
@@ -96,9 +98,9 @@ export const generateFilm = () => ({
     "description": generateDescription(),
   },
   "userDetails": {
-    "watchlist": false,
-    "alreadyWatched": true,
+    "watchList": Boolean(getRandomInteger(0, 1)),
+    "alreadyWatched": getAlreadyWatched(),
     "watchingDate": "2019-04-12T16:12:32.554Z",
-    "favorite": false
+    "favorite": Boolean(getRandomInteger(0, 1)),
   }
 });

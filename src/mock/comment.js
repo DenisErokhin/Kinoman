@@ -1,6 +1,6 @@
-import { getRandomInteger } from '../utils/common.js';
+import {getRandomInteger} from '../utils/common.js';
+import {EMOTIONS} from '../const.js';
 
-const EMOTIONS = ["smile", "sleeping", "puke", "angry"];
 
 let i = 0;
 
