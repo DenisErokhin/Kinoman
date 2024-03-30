@@ -1,6 +1,7 @@
 import FilmsModel from '../model/films-model.js';
 import { getRandomInteger } from '../utils/common.js';
 import CommentsModel from '../model/comments-model.js';
+import { nanoid } from 'nanoid';
 
 const stringDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
 
@@ -37,12 +38,12 @@ const generateDescription = () => {
 
 let i = 0;
 
-const getIdFilm = () => {
+// const getIdFilm = () => {
 
-  let y = i + 1;
-  i++;
-  return y;
-}
+//   let y = i + 1;
+//   i++;
+//   return y;
+// }
 
 const commentsModel = new CommentsModel();
 const comments = [...commentsModel.comments];
@@ -72,7 +73,7 @@ const genarateImg = () => {
 const getAlreadyWatched = () => Boolean(getRandomInteger(0, 1));
 
 export const generateFilm = () => ({
-  "id": getIdFilm(),
+  "id": nanoid(),
   "comments": hasComments ? idComments : [],
   "filmInfo": {
     "title": generateNameFilm(),

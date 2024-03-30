@@ -5,10 +5,10 @@ const createFilterItemTemplate = (filter) => {
   const {name, count} = filter;
 
   if (name === FilterType.ALL) {
-    return `<a href="#${name}" class="main-navigation__item">${name}</a>`;
+    return `<a href="#${name}" class="main-navigation__item" data-type-filter="${name}">${name}</a>`;
   }
 
-  return `<a href="#${name}" class="main-navigation__item">${name}
+  return `<a href="#${name}" class="main-navigation__item" data-type-filter="${name}">${name}
   <span class="main-navigation__item-count">${count}</span>
   </a>`;
 };
@@ -34,4 +34,18 @@ export default class FilmFilterView extends AbstractView {
   get template() {
     return createFilterTemplate(this.#filters);
   }
+
+  setFilterClickHandler = (callback) => {
+    this._callback.filterClick = callback;
+    this.element.addEventListener('click', this.#filterClickHandler);
+  };
+
+  #filterClickHandler = (evt) => {
+    if(evt.target.tagName !==  'A') {
+      return;
+    }
+
+    evt.preventDefault();
+    this._callback.filterClick(evt.target.dataset.typeFilter);
+  };
 }
