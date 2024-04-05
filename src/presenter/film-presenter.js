@@ -6,33 +6,30 @@ export default class FilmPresenter {
   #boardContainer = null;
   #filmCart = null;
   #film = null;
-  #renderFilmDetails = null;
   #changeData = null;
   #changeMode = null;
+  #mode = null;
+  #renderFilmDetailsComponent = null;
 
-  constructor(filmListContainer, renderFilmDetails, closeFilmDetails, changeData) {
+  constructor(filmListContainer, changeData, renderFilmDetailsComponent) {
     this.#filmListContainer = filmListContainer;
-    this.#renderFilmDetails = renderFilmDetails;
     this.#changeData = changeData;
-    this.closeFilmDetails = closeFilmDetails;
+    this.#renderFilmDetailsComponent = renderFilmDetailsComponent;
   }
 
   init(film) {
     this.#film = film;
     const prevFilmCart = this.#filmCart;
-
-    this.#filmCart = new FilmCartView(film);
-
+    this.#filmCart = new FilmCartView(this.#film);
 
     this.#filmCart.setFavoriteClickHandler(this.handleFavoriteClick);
     this.#filmCart.setWatchListClickHandler(this.handleWatchListClick);
     this.#filmCart.setAlreadyWatchClickHandler(this.handleAlreadyWatchedClick);
+    this.#filmCart.setClickHandler(() => {
+      this.#renderFilmDetailsComponent(this.#film);
+    });
 
     if (prevFilmCart === null) {
-      this.#filmCart.setClickHandler(() => {
-        this.#renderFilmDetails(film);
-      });
-
       render(this.#filmCart, this.#filmListContainer.element);
       return;
     }
@@ -44,22 +41,23 @@ export default class FilmPresenter {
     remove(prevFilmCart);
   }
 
-  // resetView() {
-  //   if(this.#mode !== Mode.DEFAULT) {
-  //     this.closeFilmDetails();
-  //   }
-  // }
+  // resetView = () => {
+  //   // this.closeFilmDetails();
+  // };
 
   handleWatchListClick = () => {
-    this.#changeData({...this.#film, watchList: !this.#film.userDetails.watchList});
+    this.#film.userDetails.watchList = !this.#film.userDetails.watchList;
+    this.#changeData(this.#film);
   };
 
   handleFavoriteClick = () => {
-    this.#changeData({...this.#film, favorite: !this.#film.userDetails.favorite});
+    this.#film.userDetails.favorite = !this.#film.userDetails.favorite;
+    this.#changeData(this.#film);
   };
 
   handleAlreadyWatchedClick = () => {
-    this.#changeData({...this.#film, alreadyWatched: !this.#film.userDetails.alreadyWatched});
+    this.#film.userDetails.alreadyWatched = !this.#film.userDetails.alreadyWatched;
+    this.#changeData(this.#film);
   };
 
   destroy() {

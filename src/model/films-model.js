@@ -1,4 +1,4 @@
-// import { generateFilm } from '../mock/film.js';
+import { generateFilm } from '../mock/film.js';
 
 const FILM_COUNT = 19;
 

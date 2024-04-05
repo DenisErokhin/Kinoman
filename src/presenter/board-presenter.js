@@ -9,9 +9,8 @@ import FilmPresenter from './film-presenter.js';
 import FilmDetailsPresenter from './film-details-presenter.js';
 import { updateItem } from '../utils/common.js';
 import { generateFilter } from '../mock/filter.js';
-// import { FilterType } from '../const.js';
+import { FilterType } from '../const.js';
 import { filter } from '../utils/filter.js';
-// import FilmCartView from '../view/film-cart-view.js';
 
 const FILM_COUNT_PER_STEP = 5;
 
@@ -36,13 +35,13 @@ export default class BoardPresenter {
   #sourcedFilms = [];
   #filmPresenter = new Map();
   #filmDetailsPresenter = null;
+  #selectedFilm = null;
 
   constructor(boardContainer, filmsModel, commentsModel) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#sourcedFilms = [...this.#filmsModel.films];
-    this.#filmDetailsPresenter = new FilmDetailsPresenter(this.#boardContainer, this.#commentsModel);
   }
 
   init() {
@@ -79,9 +78,12 @@ export default class BoardPresenter {
   }
 
   #renderFilm(film) {
-    const filmPresenter = new FilmPresenter(this.#filmListContainer, this.#filmDetailsPresenter.renderFilmDetails, this.#filmDetailsPresenter.closeFilmDetails, this.#handleTaskChange);
+    const filmPresenter = new FilmPresenter(
+      this.#filmListContainer,
+      this.#handleFilmChange,
+      this.#renderFilmDetailsComponent
+    );
     this.#filmPresenter.set(film.id, filmPresenter);
-
     filmPresenter.init(film);
   }
 
@@ -101,33 +103,45 @@ export default class BoardPresenter {
     this._filmListTitle.textContent = TextTitle.ALL_MOVIES;
   }
 
-  #handleTaskChange = (updatedItem) => {
-    this.#films = updateItem(this.#films, updatedItem);
-    this.#filmPresenter.get(updatedItem.id).init(updatedItem);
+  #renderFilmDetailsComponent = (film) => {
+    this.#selectedFilm = film;
+    if(!this.#filmDetailsPresenter) {
+      this.#filmDetailsPresenter = new FilmDetailsPresenter(this.#boardContainer, this.#commentsModel, this.#handleFilmChange);
+    }
+
+    this.#filmDetailsPresenter.init(this.#selectedFilm, this.#commentsModel);
+    document.querySelector('body').classList.add('hide-overflow');
   };
 
-  #filterTasks = (typeFilter) => {
+  #changeFiltersValue () {
+    const filters = generateFilter(this.#films);
+    const filtersButton = this.#filtersFilm.element.querySelectorAll('a');
+
+    for(let i = 0; i < filters.length; i++) {
+      if (filtersButton[i].dataset.typeFilter === FilterType.ALL) {
+        continue;
+      }
+
+      if (filtersButton[i].dataset.typeFilter === filters[i].name) {
+        filtersButton[i].querySelector('.main-navigation__item-count').textContent = filters[i].count;
+      }
+    }
+  }
+
+  #handleFilmChange = (updatedItem) => {
+    this.#films = updateItem(this.#films, updatedItem);
+    this.#filmPresenter.get(updatedItem.id).init(updatedItem);
+    this.#changeFiltersValue();
+  };
+
+  #filterFilms = (typeFilter) => {
     this.#films = [...this.#sourcedFilms];
     this.#films = filter[typeFilter](this.#films);
-    // switch(typeFilter) {
-    //   case FilterType.FAVORITES:
-    //     this.#films = filter[typeFilter](this.#films);
-    //     break;
-    //   case FilterType.HISTORY:
-    //     this.#films = filter[typeFilter](this.#films);
-    //     break;
-    //   case FilterType.WATCHLIST:
-
-    //     this.#films = filter[typeFilter](this.#films);
-    //     break;
-    //   case FilterType.ALL:
-    //     this.#films = filter[typeFilter](this.#films);
-    //     break;
-    // }
+    return this.#films;
   };
 
   #handleChangeFilter = (typeFilter) => {
-    this.#filterTasks(typeFilter);
+    this.#filterFilms(typeFilter);
     this.#clearFilmList();
     this.#renderFilms();
   };

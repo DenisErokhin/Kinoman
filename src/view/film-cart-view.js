@@ -18,9 +18,9 @@ const createFilmCartTemplate = (film) => {
       <span class="film-card__comments">${comments.length} comments</span>
     </a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
-      <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
-      <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
+      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${film.userDetails.watchList ? 'film-card__controls-item--active': ''}" type="button">Add to watchlist</button>
+      <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${film.userDetails.alreadyWatched ? 'film-card__controls-item--active': ''}" type="button">Mark as watched</button>
+      <button class="film-card__controls-item film-card__controls-item--favorite  ${film.userDetails.favorite ? 'film-card__controls-item--active': ''}" type="button">Mark as favorite</button>
     </div>
   </article>`;
 };
@@ -55,16 +55,19 @@ export default class FilmCartView extends AbstractView{
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
+    evt.target.classList.toggle('film-card__controls-item--active');
   };
 
   #watchListClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.watchListClick();
+    evt.target.classList.toggle('film-card__controls-item--active');
   };
 
   #alreadyWatchClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.alreadyWatchedClick();
+    evt.target.classList.toggle('film-card__controls-item--active');
   };
 
   setClickHandler = (callback) => {

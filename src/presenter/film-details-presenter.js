@@ -1,42 +1,43 @@
-import { render, remove } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import PopupFilmInfoView from '../view/popup-film-info-view.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  DETAILS: 'DETAILS',
-};
 
 export default class FilmDetailsPresenter {
   #boardContainer = null;
   #filmCartDetails = null;
   #commentsModel = null;
-  mode = Mode.DEFAULT;
+  #changeData = null;
+  #film = null;
 
-  constructor(boardContainer, commentsModel) {
+  constructor(boardContainer, commentsModel, changeData) {
     this.#boardContainer = boardContainer;
     this.#commentsModel = commentsModel;
+    this.#changeData = changeData;
   }
 
-  renderFilmDetails = (film) => {
-    if(this.mode !== Mode.DEFAULT) {
-      return;
-      // this.closeFilmDetails();
-    }
-
-    this.mode = Mode.DETAILS;
-
+  init(film, commentsModel) {
+    this.#film = film;
+    this.#commentsModel = commentsModel;
     const comments = [...this.#commentsModel.comments];
+
+    const prevFilmCartDetails = this.#filmCartDetails;
     this.#filmCartDetails = new PopupFilmInfoView(film, comments);
 
-
-    render(this.#filmCartDetails, this.#boardContainer.parentElement);
     this.#filmCartDetails.setClickHandler(this.closeFilmDetails);
-    document.querySelector('body').classList.add('hide-overflow');
     document.addEventListener('keydown', this.onEscKeyDown);
-  };
+    this.#filmCartDetails.setFavoriteClickHandler(this.handleFavoriteClick);
+    this.#filmCartDetails.setWatchListClickHandler(this.handleWatchListClick);
+    this.#filmCartDetails.setAlreadyWatchClickHandler(this.handleAlreadyWatchedClick);
+
+    if(prevFilmCartDetails === null || !this.#boardContainer.parentElement.contains(prevFilmCartDetails.element)) {
+      render(this.#filmCartDetails, this.#boardContainer.parentElement);
+      return;
+    }
+
+    replace(this.#filmCartDetails, prevFilmCartDetails);
+    remove(prevFilmCartDetails);
+  }
 
   closeFilmDetails = () => {
-    this.mode = Mode.DEFAULT;
     remove(this.#filmCartDetails);
     document.querySelector('body').classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.onEscKeyDown);
@@ -47,5 +48,20 @@ export default class FilmDetailsPresenter {
       evt.preventDefault();
       this.closeFilmDetails();
     }
+  };
+
+  handleWatchListClick = () => {
+    this.#film.userDetails.watchList = !this.#film.userDetails.watchList;
+    this.#changeData(this.#film);
+  };
+
+  handleFavoriteClick = () => {
+    this.#film.userDetails.favorite = !this.#film.userDetails.favorite;
+    this.#changeData(this.#film);
+  };
+
+  handleAlreadyWatchedClick = () => {
+    this.#film.userDetails.alreadyWatched = !this.#film.userDetails.alreadyWatched;
+    this.#changeData(this.#film);
   };
 }
