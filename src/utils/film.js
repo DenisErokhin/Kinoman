@@ -11,7 +11,7 @@ const humanizeCommentDate = (dueDate) => dayjs(dueDate).format('YYYY/MM/D HH:mm'
 // Получаем время фильма в часах и минутах
 
 const getTimeFilm = (time) => {
-  if(time < 60) {
+  if (time < 60) {
     return `${time}m`;
   }
 
@@ -26,4 +26,8 @@ const getTimeFilm = (time) => {
   return `${hours}h ${minutes}m`;
 };
 
-export { humanizeFilmReleaseDate, humanizeFilmReleaseDateInYear, humanizeCommentDate, getTimeFilm};
+const sortFilmByDate = (filmA, filmB) => new Date(filmB.filmInfo.release.date) - new Date(filmA.filmInfo.release.date);
+
+const sortFilmByRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
+
+export { humanizeFilmReleaseDate, humanizeFilmReleaseDateInYear, humanizeCommentDate, getTimeFilm, sortFilmByDate, sortFilmByRating };

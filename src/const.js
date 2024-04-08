@@ -7,6 +7,12 @@ const FilterType = {
   FAVORITES: 'Favorites',
 };
 
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+
 const UserStatusValue = {
   NOVICE: 0,
   FAN: 10,
@@ -19,4 +25,4 @@ const UserStatusTitle = {
   MOVIE_BUFF: 'Movie Buff',
 };
 
-export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle};
+export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType};

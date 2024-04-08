@@ -1,4 +1,4 @@
-import { humanizeFilmReleaseDateInYear, getTimeFilm } from '../utils/task.js';
+import { humanizeFilmReleaseDateInYear, getTimeFilm } from '../utils/film.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilmCartTemplate = (film) => {

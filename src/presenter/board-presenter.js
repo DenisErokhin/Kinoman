@@ -9,8 +9,9 @@ import FilmPresenter from './film-presenter.js';
 import FilmDetailsPresenter from './film-details-presenter.js';
 import { updateItem } from '../utils/common.js';
 import { generateFilter } from '../mock/filter.js';
-import { FilterType } from '../const.js';
+import { FilterType, SortType } from '../const.js';
 import { filter } from '../utils/filter.js';
+import { sortFilmByDate, sortFilmByRating } from '../utils/film.js';
 
 const FILM_COUNT_PER_STEP = 5;
 
@@ -30,28 +31,57 @@ export default class BoardPresenter {
   #filmsList = new FilmsListView();
   #filmListContainer = new FilmListContainerView();
   #buttonShowMore = new ButtonShowMoreView();
+  #filmSort = new FilmSortView();
   #filtersFilm = null;
   #films = [];
-  #sourcedFilms = [];
+  #sourcedBoardFilms = [];
   #filmPresenter = new Map();
   #filmDetailsPresenter = null;
   #selectedFilm = null;
+  #currentSortType = SortType.DEFAULT;
 
   constructor(boardContainer, filmsModel, commentsModel) {
     this.#boardContainer = boardContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
-    this.#sourcedFilms = [...this.#filmsModel.films];
   }
 
   init() {
     this.#films = [...this.#filmsModel.films];
+    this.#sourcedBoardFilms = [...this.#filmsModel.films];
+
     this.#renderBoard();
   }
 
   #renderFilmSort() {
-    render(new FilmSortView(), this.#boardContainer);
+    render(this.#filmSort, this.#boardContainer);
+    this.#filmSort.setSortTypeClickHandler(this.#handleSortType);
   }
+
+  #sortFilms = (sortType) => {
+    switch (sortType) {
+      case SortType.DATE:
+        this.#films.sort(sortFilmByDate);
+        break;
+      case SortType.RATING:
+        this.#films.sort(sortFilmByRating);
+        break;
+      default:
+        this.#films = [...this.#sourcedBoardFilms];
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  #handleSortType = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortFilms(sortType);
+    this.#clearFilmList();
+    this.#renderFilms();
+  };
 
   #renderFilters() {
     const filters = generateFilter(this.#filmsModel.films);
@@ -101,6 +131,7 @@ export default class BoardPresenter {
     this._filmListTitle = this.#filmsList.element.querySelector('.films-list__title');
     this._filmListTitle.classList.remove('visually-hidden');
     this._filmListTitle.textContent = TextTitle.ALL_MOVIES;
+    this.#filmSort.element.classList.add('visually-hidden');
   }
 
   #renderFilmDetailsComponent = (film) => {
@@ -135,7 +166,7 @@ export default class BoardPresenter {
   };
 
   #filterFilms = (typeFilter) => {
-    this.#films = [...this.#sourcedFilms];
+    this.#films = [...this.#sourcedBoardFilms];
     this.#films = filter[typeFilter](this.#films);
     return this.#films;
   };

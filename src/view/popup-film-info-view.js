@@ -1,5 +1,5 @@
 import { createCommentTemplate } from './comment-film-template.js';
-import { humanizeFilmReleaseDate, getTimeFilm } from '../utils/task.js';
+import { humanizeFilmReleaseDate, getTimeFilm } from '../utils/film.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;

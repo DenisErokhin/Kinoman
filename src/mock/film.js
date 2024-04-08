@@ -78,7 +78,7 @@ export const generateFilm = () => ({
   "filmInfo": {
     "title": generateNameFilm(),
     "alternativeTitle": "Laziness Who Sold Themselves",
-    "totalRating": 5.3,
+    "totalRating": getRandomInteger(0, 9) + ".3",
     "poster": genarateImg(),
     "ageRating": 0,
     "director": "Tom Ford",
@@ -89,7 +89,7 @@ export const generateFilm = () => ({
       "Morgan Freeman"
     ],
     "release": {
-      "date": "2019-05-11T00:00:00.000Z",
+      "date": "201" + getRandomInteger(0, 9) + "-05-11T00:00:00.000Z",
       "releaseCountry": "Finland"
     },
     "runtime": 77,

@@ -1,4 +1,4 @@
-import { humanizeCommentDate } from '../utils/task.js';
+import { humanizeCommentDate } from '../utils/film.js';
 
 const createComment = (element) => {
   const {author, comment, date, emotion} = element;
