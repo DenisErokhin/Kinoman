@@ -1,4 +1,4 @@
-import { humanizeFilmReleaseDateInYear, getTimeFilm } from '../utils/film.js';
+import { humanizeFilmReleaseDateInYear, getMinutesToTime } from '../utils/film.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilmCartTemplate = (film) => {
@@ -10,7 +10,7 @@ const createFilmCartTemplate = (film) => {
        <p class="film-card__rating">${totalRating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${humanizeFilmReleaseDateInYear(release.date)}</span>
-        <span class="film-card__duration">${getTimeFilm(runtime)}</span>
+        <span class="film-card__duration">${getMinutesToTime(runtime)}</span>
         <span class="film-card__genre">${genre.join(', ')}</span>
       </p>
       <img src="./images/posters/${poster}" alt="" class="film-card__poster">

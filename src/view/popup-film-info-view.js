@@ -1,6 +1,6 @@
-import { createCommentTemplate } from './comment-film-template.js';
-import { humanizeFilmReleaseDate, getTimeFilm } from '../utils/film.js';
-import { createNewCommentTemplate } from './new-comment-view.js';
+import { createCommentTemplate } from './comments-film-template.js';
+import { humanizeFilmReleaseDate, getMinutesToTime } from '../utils/film.js';
+import { createNewCommentTemplate } from './new-comment-template.js';
 // import { replace } from '../framework/render.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
@@ -65,7 +65,7 @@ const createPopupInfoTemplate = (state) => {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">${getTimeFilm(runtime)}</td>
+            <td class="film-details__cell">${getMinutesToTime(runtime)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
