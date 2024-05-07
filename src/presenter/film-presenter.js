@@ -1,5 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
 import FilmCartView from '../view/film-cart-view.js';
+import { UserAction, UpdateType } from '../const.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
@@ -10,6 +11,7 @@ export default class FilmPresenter {
   #changeMode = null;
   #mode = null;
   #renderFilmDetailsComponent = null;
+  #onEscKeyDown = null;
 
   constructor(filmListContainer, changeData, renderFilmDetailsComponent) {
     this.#filmListContainer = filmListContainer;
@@ -25,7 +27,7 @@ export default class FilmPresenter {
     this.#filmCart.setFavoriteClickHandler(this.handleFavoriteClick);
     this.#filmCart.setWatchListClickHandler(this.handleWatchListClick);
     this.#filmCart.setAlreadyWatchClickHandler(this.handleAlreadyWatchedClick);
-    this.#filmCart.setClickHandler(() => {
+    this.#filmCart.setCloseClickHandler(() => {
       this.#renderFilmDetailsComponent(this.#film);
     });
 
@@ -47,17 +49,17 @@ export default class FilmPresenter {
 
   handleWatchListClick = () => {
     this.#film.userDetails.watchList = !this.#film.userDetails.watchList;
-    this.#changeData(this.#film);
+    this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   handleFavoriteClick = () => {
     this.#film.userDetails.favorite = !this.#film.userDetails.favorite;
-    this.#changeData(this.#film);
+    this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   handleAlreadyWatchedClick = () => {
     this.#film.userDetails.alreadyWatched = !this.#film.userDetails.alreadyWatched;
-    this.#changeData(this.#film);
+    this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   destroy() {

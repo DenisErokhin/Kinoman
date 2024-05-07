@@ -25,7 +25,7 @@ const createFilmCartTemplate = (film) => {
   </article>`;
 };
 
-export default class FilmCartView extends AbstractView{
+export default class FilmCartView extends AbstractView {
   #film = null;
 
   constructor(film) {
@@ -55,28 +55,25 @@ export default class FilmCartView extends AbstractView{
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
-    evt.target.classList.toggle('film-card__controls-item--active');
   };
 
   #watchListClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.watchListClick();
-    evt.target.classList.toggle('film-card__controls-item--active');
   };
 
   #alreadyWatchClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.alreadyWatchedClick();
-    evt.target.classList.toggle('film-card__controls-item--active');
   };
 
-  setClickHandler = (callback) => {
+  setCloseClickHandler = (callback) => {
     this._callback.click = callback;
     this._filmCartLink = this.element.querySelector('.film-card__link');
-    this._filmCartLink.addEventListener('click', this.#clickHandler);
+    this._filmCartLink.addEventListener('click', this.#closeClickHandler);
   };
 
-  #clickHandler = (evt) => {
+  #closeClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
   };

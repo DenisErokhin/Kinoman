@@ -51,8 +51,9 @@ const comments = [...commentsModel.comments];
 const hasComments = comments.length > 0;
 
 const idComments = comments.map((comment, index) => {
-  return index;
+  return comment.id;
 })
+
 
 const genarateImg = () => {
   const adressesImg = [

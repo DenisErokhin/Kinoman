@@ -1,7 +1,6 @@
 import { createCommentTemplate } from './comments-film-template.js';
 import { humanizeFilmReleaseDate, getMinutesToTime } from '../utils/film.js';
 import { createNewCommentTemplate } from './new-comment-template.js';
-// import { replace } from '../framework/render.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
@@ -109,11 +108,14 @@ const createPopupInfoTemplate = (state) => {
 export default class PopupFilmInfoView extends AbstractStatefulView {
   #film = null;
   #comments = null;
+  #changeData = null;
+  #commentsLength = null;
 
   constructor(film, comments) {
     super();
     this.#film = film;
     this.#comments = comments;
+    this.#commentsLength = this.#comments.length;
     this._state = PopupFilmInfoView.parseCommentToState(this.#film, this.#comments);
     this.#setInnerHandlers();
   }
@@ -122,12 +124,12 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     return createPopupInfoTemplate(this._state);
   }
 
-  setClickHandler = (callback) => {
+  setCloseClickHandler = (callback) => {
     this._callback.click = callback;
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
   };
 
-  #clickHandler = (evt) => {
+  #closeClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
   };
@@ -137,20 +139,15 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
   };
 
-  setWatchListClickHandler = (callback) => {
-    this._callback.watchListClick = callback;
-    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchListClickHandler);
-  };
-
-  setAlreadyWatchClickHandler = (callback) => {
-    this._callback.alreadyWatchedClick = callback;
-    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#alreadyWatchClickHandler);
-  };
-
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
     evt.target.classList.toggle('film-details__control-button--active');
+  };
+
+  setWatchListClickHandler = (callback) => {
+    this._callback.watchListClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchListClickHandler);
   };
 
   #watchListClickHandler = (evt) => {
@@ -159,10 +156,54 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     evt.target.classList.toggle('film-details__control-button--active');
   };
 
+  setAlreadyWatchClickHandler = (callback) => {
+    this._callback.alreadyWatchedClick = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#alreadyWatchClickHandler);
+  };
+
   #alreadyWatchClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.alreadyWatchedClick();
     evt.target.classList.toggle('film-details__control-button--active');
+  };
+
+  setDeleteCommentClickHandler = (callback) => {
+    this._callback.deleteCommentClick = callback;
+    const deleteButtons = this.element.querySelectorAll('.film-details__comment-delete');
+    deleteButtons.forEach((button) => button.addEventListener('click', this.#deleteCommentClickHandler));
+  };
+
+  #deleteCommentClickHandler = (evt) => {
+    evt.preventDefault();
+    const deleteComment = evt.target.closest('.film-details__comment');
+    const commentId = deleteComment.id;
+    this._setState ({
+      scrollPosition: this.element.scrollTop,
+    });
+    this._callback.deleteCommentClick(commentId);
+  };
+
+  getCommentInfo = () => {
+    const commentField = this.element.querySelector('.film-details__comment-input');
+    const checkedEmotion = this._state.checkedEmotion;
+    return {commentField, checkedEmotion};
+  };
+
+  updateComments = (comments) => {
+    this.#comments = comments;
+
+    if (this.#comments.length < this.#commentsLength) {
+      this.updateElement({comments});
+    } else {
+      this.updateElement({
+        comments,
+        checkedEmotion: null,
+        commentText: null,
+      });
+    }
+
+    this.element.scrollTop = this._state.scrollPosition;
+    this.#commentsLength = this.#comments.length;
   };
 
   static parseCommentToState = (film, comments) => ({
@@ -178,6 +219,7 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
   #emojiToggleHandler = (evt) => {
 
     this.updateElement({
+      commentText: this.element.querySelector('.film-details__comment-input').value,
       checkedEmotion: evt.target.value,
       scrollPosition: this.element.scrollTop,
     });
@@ -192,10 +234,10 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
   };
 
   #setInnerHandlers = () => {
-    const emotions = this.element.querySelectorAll('.film-details__emoji-item');
-    emotions.forEach((emotion) => emotion.addEventListener('change', this.#emojiToggleHandler));
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHangler);
-    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickHandler);
+    this.element.querySelectorAll('.film-details__emoji-item').forEach((emotion) => emotion.addEventListener('change', this.#emojiToggleHandler));
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => button.addEventListener('click', this.#deleteCommentClickHandler));
   };
 
   _restoreHandlers = () => {

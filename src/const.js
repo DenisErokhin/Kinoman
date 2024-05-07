@@ -25,4 +25,18 @@ const UserStatusTitle = {
   MOVIE_BUFF: 'Movie Buff',
 };
 
-export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType};
+const UserAction = {
+  UPDATE_FILM: 'UPDATE_FILM',
+  ADD_FILM: 'ADD_FILM',
+  REMOVE_FILM: 'REMOVE_FILM',
+  ADD_COMMENT: 'ADD_COMMENT',
+  REMOVE_COMMENT: 'REMOVE_COMMENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType, UserAction, UpdateType};
