@@ -48,7 +48,7 @@ export default class FilmPresenter {
   // };
 
   handleWatchListClick = () => {
-    this.#film.userDetails.watchList = !this.#film.userDetails.watchList;
+    this.#film.userDetails.watchlist = !this.#film.userDetails.watchlist;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 

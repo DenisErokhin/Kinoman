@@ -1,17 +1,17 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const getStatisticsTemplate = (amountFilms) => `<section class="footer__statistics"><p>${amountFilms} movies inside</p></section>`;
+const getStatisticsTemplate = (filmCount) => `<section class="footer__statistics"><p>${filmCount} movies inside</p></section>`;
 
-export default class StatisticsFilmView extends AbstractView {
-  #amountFilms = null;
+export default class FooterStatisticsView extends AbstractView {
+  #filmCount = null;
 
-  constructor(films) {
+  constructor(filmCount) {
     super();
-    this.#amountFilms = films.length;
+    this.#filmCount = filmCount;
   }
 
   get template() {
-    return getStatisticsTemplate(this.#amountFilms);
+    return getStatisticsTemplate(this.#filmCount);
   }
 }
 

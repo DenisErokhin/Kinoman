@@ -5,16 +5,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
-const getGenreTemplate = (genre) => {
-  let genreTemplate = '';
-
-  for (let i = 0; i < genre.length; i++) {
-    genreTemplate += createGenre(genre[i]);
-  }
-
-  return genreTemplate;
-};
-
+const getGenreTemplate = (genres) => genres.map((genre) => createGenre(genre)).join('');
 
 const createPopupInfoTemplate = (state) => {
   const {film, comments, checkedEmotion, commentText} = state;
@@ -28,7 +19,7 @@ const createPopupInfoTemplate = (state) => {
     </div>
     <div class="film-details__info-wrap">
       <div class="film-details__poster">
-        <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+        <img class="film-details__poster-img" src="./${poster}" alt="">
 
         <p class="film-details__age">${ageRating}+</p>
       </div>
@@ -85,7 +76,7 @@ const createPopupInfoTemplate = (state) => {
     </div>
 
     <section class="film-details__controls">
-      <button type="button" class="film-details__control-button film-details__control-button--watchlist ${film.userDetails.watchList ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
+      <button type="button" class="film-details__control-button film-details__control-button--watchlist ${film.userDetails.watchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
       <button type="button" class="film-details__control-button film-details__control-button--watched ${film.userDetails.alreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
       <button type="button" class="film-details__control-button film-details__control-button--favorite ${film.userDetails.favorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
     </section>
@@ -93,7 +84,8 @@ const createPopupInfoTemplate = (state) => {
 
   <div class="film-details__bottom-container">
     <section class="film-details__comments-wrap">
-      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+      <h3 class="film-details__comments-title">${!comments.length ? 'Loading...' : `Comments <span class="film-details__comments-count">${comments.length}</span>`}</h3>
+
 
       <ul class="film-details__comments-list">${createCommentTemplate(comments)}</ul>
 
@@ -244,3 +236,6 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     this.#setInnerHandlers();
   };
 }
+
+
+// Comments <span class="film-details__comments-count">${comments.length}</span>

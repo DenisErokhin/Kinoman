@@ -13,12 +13,12 @@ const createFilmCartTemplate = (film) => {
         <span class="film-card__duration">${getMinutesToTime(runtime)}</span>
         <span class="film-card__genre">${genre.join(', ')}</span>
       </p>
-      <img src="./images/posters/${poster}" alt="" class="film-card__poster">
+      <img src="./${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${description}</p>
       <span class="film-card__comments">${comments.length} comments</span>
     </a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${film.userDetails.watchList ? 'film-card__controls-item--active': ''}" type="button">Add to watchlist</button>
+      <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${film.userDetails.watchlist ? 'film-card__controls-item--active': ''}" type="button">Add to watchlist</button>
       <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${film.userDetails.alreadyWatched ? 'film-card__controls-item--active': ''}" type="button">Mark as watched</button>
       <button class="film-card__controls-item film-card__controls-item--favorite  ${film.userDetails.favorite ? 'film-card__controls-item--active': ''}" type="button">Mark as favorite</button>
     </div>

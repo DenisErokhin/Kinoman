@@ -3,13 +3,13 @@ import {EMOTIONS} from '../const.js';
 import { nanoid } from 'nanoid';
 
 
-let i = 0;
+// let i = 0;
 
-// const generateId = () => {
-//   let y = i + 1;
-//   i++;
-//   return y;
-// }
+// // const generateId = () => {
+// //   let y = i + 1;
+// //   i++;
+// //   return y;
+// // }
 
 export const generateComment = () => ({
   "id": nanoid(),

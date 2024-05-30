@@ -37,6 +37,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType, UserAction, UpdateType};

@@ -11,6 +11,7 @@ import { filter } from '../utils/filter.js';
 import { sortFilmByDate, sortFilmByRating } from '../utils/film.js';
 import { UserAction, UpdateType, FilterType } from '../const.js';
 import NoFilmView from '../view/no-films-view.js';
+import LoadingView from '../view/loading-view.js';
 
 
 const FILM_COUNT_PER_STEP = 5;
@@ -23,6 +24,7 @@ export default class BoardPresenter {
   #filmsComponent = new FilmsComponentView();
   #filmsList = new FilmsListView();
   #filmListContainer = new FilmListContainerView();
+  #loadingComponent = new LoadingView();
   #loadMoreButtonComponent = null;
   #sortComponent = null;
   #filtersFilm = null;
@@ -34,6 +36,7 @@ export default class BoardPresenter {
   #filters = null;
   #filtersModel = null;
   #noFilmComponent = null;
+  #isLoading = null;
 
 
   constructor(boardContainer, filmsModel, filtersModel, commentsModel) {
@@ -41,6 +44,8 @@ export default class BoardPresenter {
     this.#filmsModel = filmsModel;
     this.#filtersModel = filtersModel;
     this.#commentsModel = commentsModel;
+    this.#isLoading = true;
+
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
@@ -120,16 +125,22 @@ export default class BoardPresenter {
     render(this.#noFilmComponent, this.#filmsList.element);
   };
 
-  #renderFilmDetailsComponent = (film) => {
+  #renderFilmDetailsComponent = async (film) => {
+    const comments = await this.#commentsModel.init(film);
+
+    const isCommentLoadingError = !comments;
+
+    if (!isCommentLoadingError) {
+      document.addEventListener('keydown', this.onCtrlEnterDown);
+    }
+
     this.#selectedFilm = film;
     if(this.#filmDetailsPresenter) {
       return;
     }
-
     this.#filmDetailsPresenter = new FilmDetailsPresenter(this.#boardContainer, this.#commentsModel, this.#handleViewAction, this.#closeFilmDetailsComponent);
-    this.#filmDetailsPresenter.init(this.#selectedFilm, this.#commentsModel);
+    this.#filmDetailsPresenter.init(this.#selectedFilm, comments, isCommentLoadingError);
     document.querySelector('body').classList.add('hide-overflow');
-    document.addEventListener('keydown', this.onCtrlEnterDown);
     document.addEventListener('keydown', this.onEscKeyDown);
   };
 
@@ -137,6 +148,7 @@ export default class BoardPresenter {
     this.#filmDetailsPresenter.destroy();
     this.#filmDetailsPresenter = null;
     this.#selectedFilm = null;
+
 
     document.querySelector('body').classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.onCtrlEnterDown);
@@ -158,6 +170,7 @@ export default class BoardPresenter {
   };
 
   #handleViewAction = (userAction, updateType, updateFilm, updateComment) => {
+
     switch (userAction) {
       case UserAction.UPDATE_FILM:
         this.#filmsModel.updateFilm(updateType, updateFilm);
@@ -186,6 +199,11 @@ export default class BoardPresenter {
         this.#clearBoard({resetRenderedFilmCount: true, resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -208,6 +226,10 @@ export default class BoardPresenter {
     }
   };
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#filmsList.element);
+  }
+
   #clearBoard = (resetRenderedFilmCount = false, resetSortType = false) => {
     const filmCount = this.films.length;
 
@@ -215,6 +237,7 @@ export default class BoardPresenter {
     this.#filmPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#loadMoreButtonComponent);
     remove(this.#noFilmComponent);
 
@@ -230,11 +253,17 @@ export default class BoardPresenter {
   };
 
   #renderBoard = () => {
+
     const films = this.films;
     const filmCount = films.length;
 
     this.#renderFilmComponent();
     this.#renderFilmList();
+
+    if(this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if(filmCount === 0) {
       this.#renderNoFilms();

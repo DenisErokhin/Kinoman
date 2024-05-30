@@ -21,12 +21,12 @@ export default class FilmDetailsPresenter {
     this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
-  init(film, commentsModel) {
+  init(film, comments, isCommentLoadingError) {
     this.#film = film;
-    this.#commentsModel = commentsModel;
-    const comments = [...this.#commentsModel.comments];
+    this.#comments = (!isCommentLoadingError) ? comments : [];
+
     const prevFilmCartDetails = this.#filmCartDetails;
-    this.#filmCartDetails = new PopupFilmInfoView(film, comments);
+    this.#filmCartDetails = new PopupFilmInfoView(film, this.#comments);
 
     this.#filmCartDetails.setCloseClickHandler(() => {
       this.#closeFilmDetails();
@@ -68,7 +68,7 @@ export default class FilmDetailsPresenter {
   };
 
   handleWatchListClick = () => {
-    this.#film.userDetails.watchList = !this.#film.userDetails.watchList;
+    this.#film.userDetails.watchlist = !this.#film.userDetails.watchlist;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 

@@ -10,5 +10,3 @@ export default class FilmsListView extends AbstractView {
     return createFilmListTemplate();
   }
 }
-
-/* <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2> */

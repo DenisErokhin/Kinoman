@@ -1,14 +1,36 @@
-import { generateComment } from '../mock/comment.js';
+// import { generateComment } from '../mock/comment.js';
 import Observable from '../framework/observable.js';
 
-const COMMENT_COUNT = 5;
+// const COMMENT_COUNT = 5;
 
 export default class CommentsModel extends Observable {
-  #comments = Array.from({length: COMMENT_COUNT}, generateComment);
+  #commentsApiService = null;
+  #comments = [];
+  // #comments = Array.from({length: COMMENT_COUNT}, generateComment);
+
+  constructor (commentsApiService) {
+    super();
+    this.#commentsApiService = commentsApiService;
+  }
 
   get comments() {
     return this.#comments;
   }
+
+  init = async (film) => {
+    this.#comments = [];
+
+    try {
+      const comments = await this.#commentsApiService.getComments(film);
+      this.#comments = [...comments]; // Можно сделать ревью
+
+      this._notify();
+    } catch (err) {
+      this.#comments = [];
+    }
+
+    return this.#comments;
+  };
 
   addComment = (updateType, update) => {
     this.#comments = [
