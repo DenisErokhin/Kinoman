@@ -1,7 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
 import PopupFilmInfoView from '../view/popup-film-info-view.js';
-import { UserAction, UpdateType } from '../const.js';
-import { nanoid } from 'nanoid';
+import { UserAction, UpdateType, UserDetailsValue } from '../const.js';
 
 export default class FilmDetailsPresenter {
   #boardContainer = null;
@@ -11,17 +10,20 @@ export default class FilmDetailsPresenter {
   #closeFilmDetails = null;
   #film = null;
   #comments = null;
-  #onCtrlEnterDown = null;
+  #deletedComment = null;
+  #deletedCommentId = null;
+  #valueActiveButton = null;
 
   constructor(boardContainer, commentsModel, changeData, closeFilmDetails) {
     this.#boardContainer = boardContainer;
     this.#commentsModel = commentsModel;
     this.#changeData = changeData;
     this.#closeFilmDetails = closeFilmDetails;
-    this.#commentsModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.handleModelEvent);
+
   }
 
-  init(film, comments, isCommentLoadingError) {
+  init (film, comments, isCommentLoadingError) {
     this.#film = film;
     this.#comments = (!isCommentLoadingError) ? comments : [];
 
@@ -45,17 +47,22 @@ export default class FilmDetailsPresenter {
     remove(prevFilmCartDetails);
   }
 
-  #handleModelEvent = () => {
-    this.#filmCartDetails.updateComments(this.#commentsModel.comments);
+  handleModelEvent = (updateType, update) => {
+
+    if (update) {
+      this.#film = update;
+    }
+
+    this.#filmCartDetails.updatePopup(this.#film, this.#commentsModel.comments);
   };
 
-  checkValidComment = (commentField, checkedEmotion) => {
+  checkValidComment = (commentField, emotion) => {
     if (commentField.value.trim() === '') {
       commentField.setCustomValidity('Комментарий не может быть пустым');
       return false;
     }
 
-    if (checkedEmotion === null) {
+    if (emotion === null) {
       commentField.setCustomValidity('Выберите эмоцию');
       return false;
     }
@@ -68,38 +75,35 @@ export default class FilmDetailsPresenter {
   };
 
   handleWatchListClick = () => {
+    this.#valueActiveButton = UserDetailsValue.WATCHLIST;
     this.#film.userDetails.watchlist = !this.#film.userDetails.watchlist;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   handleFavoriteClick = () => {
+    this.#valueActiveButton = UserDetailsValue.FAVORITE;
     this.#film.userDetails.favorite = !this.#film.userDetails.favorite;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   handleAlreadyWatchedClick = () => {
+    this.#valueActiveButton = UserDetailsValue.WATCHED;
     this.#film.userDetails.alreadyWatched = !this.#film.userDetails.alreadyWatched;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   createComment = () => {
-    const {commentField, checkedEmotion} = this.#filmCartDetails.getCommentInfo();
+    const {commentField, comment, emotion} = this.#filmCartDetails.getCommentInfo();
 
-    if(!this.checkValidComment(commentField, checkedEmotion)) {
+    if (!this.checkValidComment(commentField, emotion)) {
       return;
     }
 
-    const newCommentId = nanoid();
-
     const newComment = {
-      id: newCommentId,
-      author: 'random',
-      comment: commentField.value,
-      date: new Date(),
-      emotion: checkedEmotion,
+      comment,
+      emotion,
+      date: new Date().toISOString(),
     };
-
-    this.#film.comments = [...this.#film.comments, newCommentId];
 
     this.#changeData(
       UserAction.ADD_COMMENT,
@@ -109,12 +113,9 @@ export default class FilmDetailsPresenter {
   };
 
   handleCommentDeleteClick = (commentId) => {
-    const index = this.#commentsModel.comments.findIndex((comment) => comment.id === commentId);
     const deletedComment = this.#commentsModel.comments.find((comment) => comment.id === commentId);
-    this.#film.comments = [
-      ...this.#film.comments.slice(0, index),
-      ...this.#film.comments.slice(index + 1)
-    ];
+    this.#deletedComment = deletedComment;
+    this.#deletedCommentId = commentId;
 
     this.#changeData(
       UserAction.REMOVE_COMMENT,
@@ -122,5 +123,48 @@ export default class FilmDetailsPresenter {
       this.#film,
       deletedComment
     );
+  };
+
+  setSaving = () => {
+    this.#filmCartDetails.updateElement({
+      isDisabled: true,
+    });
+
+    this.#filmCartDetails.fixScrollPosition();
+  };
+
+  setDeleting = () => {
+    this.#filmCartDetails.updateElement({
+      isDisabled: true,
+      deletedCommentId: this.#deletedComment.id,
+    });
+
+    this.#filmCartDetails.fixScrollPosition();
+  };
+
+  setAborting = (userAction) => {
+    const resetFormState = () =>  {
+      this.#filmCartDetails.updateElement({
+        isDisabled: false,
+        deletedCommentId: null,
+      });
+
+      this.#filmCartDetails.fixScrollPosition();
+    };
+
+    if (userAction === UserAction.REMOVE_COMMENT) {
+      resetFormState();
+      document.getElementById(this.#deletedCommentId).classList.add('shake');
+      return;
+    }
+
+    if (userAction === UserAction.UPDATE_FILM) {
+      this.#film.userDetails[this.#valueActiveButton] = !this.#film.userDetails[this.#valueActiveButton];
+      resetFormState();
+      document.querySelector('.film-details__controls').classList.add('shake');
+      return;
+    }
+
+    this.#filmCartDetails.shake(resetFormState);
   };
 }

@@ -3,8 +3,8 @@ import FilmsModel from './model/films-model.js';
 import CommentsModel from './model/comments-model.js';
 import FilterModel from './model/filters-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
-import FilmsApiService from './films-api-service.js';
-import CommentsApiService from './comments-api-service.js';
+import FilmsApiService from './api-services/films-api-service.js';
+import CommentsApiService from './api-services/comments-api-service.js';
 import HeaderProfilePresenter from './presenter/header-profile-presenter.js';
 import FooterStatisticsPresenter from './presenter/footer-statistics-presenter.js';
 
@@ -32,5 +32,3 @@ footerStatisticsPresenter.init();
 boardPresenter.init();
 
 export {boardPresenter, commentsModel};
-
-

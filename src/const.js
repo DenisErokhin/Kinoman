@@ -40,4 +40,10 @@ const UpdateType = {
   INIT: 'INIT',
 };
 
-export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType, UserAction, UpdateType};
+const UserDetailsValue = {
+  FAVORITE: 'favorite',
+  WATCHED: 'alreadyWatched',
+  WATCHLIST: 'watchlist',
+};
+
+export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType, UserAction, UpdateType, UserDetailsValue};

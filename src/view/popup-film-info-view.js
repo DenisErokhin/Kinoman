@@ -8,7 +8,8 @@ const createGenre = (genre) => `<span class="film-details__genre">${genre}</span
 const getGenreTemplate = (genres) => genres.map((genre) => createGenre(genre)).join('');
 
 const createPopupInfoTemplate = (state) => {
-  const {film, comments, checkedEmotion, commentText} = state;
+
+  const {film, comments, checkedEmotion, commentText, isDisabled, deletedCommentId, isWatchlist, isFavorite, isAlreadyWatched,} = state;
   const {title, totalRating, release, runtime, genre, poster, description, ageRating, director, writers, actors} = film.filmInfo;
 
   return `<section class="film-details">
@@ -76,20 +77,20 @@ const createPopupInfoTemplate = (state) => {
     </div>
 
     <section class="film-details__controls">
-      <button type="button" class="film-details__control-button film-details__control-button--watchlist ${film.userDetails.watchlist ? 'film-details__control-button--active' : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
-      <button type="button" class="film-details__control-button film-details__control-button--watched ${film.userDetails.alreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
-      <button type="button" class="film-details__control-button film-details__control-button--favorite ${film.userDetails.favorite ? 'film-details__control-button--active' : ''}" id="favorite" name="favorite">Add to favorites</button>
+      <button ${isDisabled ? 'disabled' : ''} type="button"  class="film-details__control-button film-details__control-button--watchlist ${isWatchlist ? 'film-details__control-button--active' : ''}"  id="watchlist" name="watchlist">Add to watchlist</button>
+      <button ${isDisabled ? 'disabled' : ''} type="button" class="film-details__control-button film-details__control-button--watched ${isAlreadyWatched ? 'film-details__control-button--active' : ''}" id="watched" name="watched">Already watched</button>
+      <button ${isDisabled ? 'disabled' : ''} type="button"  class="film-details__control-button film-details__control-button--favorite ${isFavorite ? 'film-details__control-button--active' : ''}"  id="favorite" name="favorite">Add to favorites</button>
     </section>
   </div>
 
   <div class="film-details__bottom-container">
     <section class="film-details__comments-wrap">
-      <h3 class="film-details__comments-title">${!comments.length ? 'Loading...' : `Comments <span class="film-details__comments-count">${comments.length}</span>`}</h3>
+      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
 
-      <ul class="film-details__comments-list">${createCommentTemplate(comments)}</ul>
+      <ul class="film-details__comments-list">${createCommentTemplate(comments, isDisabled, deletedCommentId)}</ul>
 
-      ${createNewCommentTemplate(checkedEmotion, commentText)}
+      ${createNewCommentTemplate(checkedEmotion, commentText, isDisabled)}
     </section>
   </div>
       </form>
@@ -133,8 +134,12 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
+    this._setState ({
+      scrollPosition: this.element.scrollTop,
+      isFavorite: this.#film.userDetails.favorite,
+    });
     this._callback.favoriteClick();
-    evt.target.classList.toggle('film-details__control-button--active');
+    // evt.target.classList.toggle('film-details__control-button--active');
   };
 
   setWatchListClickHandler = (callback) => {
@@ -144,8 +149,12 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
 
   #watchListClickHandler = (evt) => {
     evt.preventDefault();
+    this._setState ({
+      scrollPosition: this.element.scrollTop,
+      isWatchlist: this.#film.userDetails.watchlist,
+    });
     this._callback.watchListClick();
-    evt.target.classList.toggle('film-details__control-button--active');
+    // evt.target.classList.toggle('film-details__control-button--active');
   };
 
   setAlreadyWatchClickHandler = (callback) => {
@@ -155,8 +164,13 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
 
   #alreadyWatchClickHandler = (evt) => {
     evt.preventDefault();
+    this._setState ({
+      scrollPosition: this.element.scrollTop,
+      isAlreadyWatched: this.#film.userDetails.alreadyWatched,
+    });
     this._callback.alreadyWatchedClick();
-    evt.target.classList.toggle('film-details__control-button--active');
+
+    // evt.target.classList.toggle('film-details__control-button--active');
   };
 
   setDeleteCommentClickHandler = (callback) => {
@@ -175,22 +189,43 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     this._callback.deleteCommentClick(commentId);
   };
 
+  // static parseStateToComment = () => {
+  // };
   getCommentInfo = () => {
     const commentField = this.element.querySelector('.film-details__comment-input');
-    const checkedEmotion = this._state.checkedEmotion;
-    return {commentField, checkedEmotion};
+    const comment = commentField.value;
+    const emotion = this._state.checkedEmotion;
+
+    return {comment, emotion, commentField};
   };
 
-  updateComments = (comments) => {
+  fixScrollPosition = () => {
+    this.element.scrollTop = this._state.scrollPosition;
+  };
+
+  updatePopup = (film, comments) => {
+    this.#film = film;
     this.#comments = comments;
 
     if (this.#comments.length < this.#commentsLength) {
-      this.updateElement({comments});
+      this.updateElement({
+        film,
+        comments,
+        isDisabled: false,
+        isWatchlist: film.userDetails.watchlist,
+        isFavorite: film.userDetails.favorite,
+        isAlreadyWatched: film.userDetails.alreadyWatched,
+      });
     } else {
       this.updateElement({
+        film,
         comments,
         checkedEmotion: null,
         commentText: null,
+        isDisabled: false,
+        isWatchlist: film.userDetails.watchlist,
+        isFavorite: film.userDetails.favorite,
+        isAlreadyWatched: film.userDetails.alreadyWatched,
       });
     }
 
@@ -204,9 +239,12 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     commentText: null,
     checkedEmotion: null,
     scrollPosition: null,
+    isDisabled: false,
+    deletedCommentId: null,
+    isWatchlist: film.userDetails.watchlist,
+    isFavorite: film.userDetails.favorite,
+    isAlreadyWatched: film.userDetails.alreadyWatched,
   });
-
-  // static parseStateToComment = (comment) => ({...comment});
 
   #emojiToggleHandler = (evt) => {
 
@@ -230,6 +268,9 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHangler);
     this.element.querySelectorAll('.film-details__emoji-item').forEach((emotion) => emotion.addEventListener('change', this.#emojiToggleHandler));
     this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => button.addEventListener('click', this.#deleteCommentClickHandler));
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchListClickHandler);
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#alreadyWatchClickHandler);
   };
 
   _restoreHandlers = () => {
@@ -239,3 +280,6 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
 
 
 // Comments <span class="film-details__comments-count">${comments.length}</span>
+
+
+// <h3 class="film-details__comments-title">${!comments ? 'Loading...' : `Comments <span class="film-details__comments-count">${comments.length}</span>`}</h3>

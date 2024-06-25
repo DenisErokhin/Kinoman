@@ -1,6 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
 import FilmCartView from '../view/film-cart-view.js';
-import { UserAction, UpdateType } from '../const.js';
+import { UserAction, UpdateType, UserDetailsValue } from '../const.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
@@ -12,6 +12,7 @@ export default class FilmPresenter {
   #mode = null;
   #renderFilmDetailsComponent = null;
   #onEscKeyDown = null;
+  #valueActiveButton = null;
 
   constructor(filmListContainer, changeData, renderFilmDetailsComponent) {
     this.#filmListContainer = filmListContainer;
@@ -48,16 +49,19 @@ export default class FilmPresenter {
   // };
 
   handleWatchListClick = () => {
+    this.#valueActiveButton = UserDetailsValue.WATCHLIST;
     this.#film.userDetails.watchlist = !this.#film.userDetails.watchlist;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   handleFavoriteClick = () => {
+    this.#valueActiveButton = UserDetailsValue.FAVORITE;
     this.#film.userDetails.favorite = !this.#film.userDetails.favorite;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
   handleAlreadyWatchedClick = () => {
+    this.#valueActiveButton = UserDetailsValue.WATCHED;
     this.#film.userDetails.alreadyWatched = !this.#film.userDetails.alreadyWatched;
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
@@ -65,4 +69,23 @@ export default class FilmPresenter {
   destroy() {
     remove(this.#filmCart);
   }
+
+  setSaving () {
+    this.#filmCart.updateElement({
+      isDisabled: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#filmCart.updateElement({
+        isDisabled: false,
+      });
+    };
+
+    this.#film.userDetails[this.#valueActiveButton] = !this.#film.userDetails[this.#valueActiveButton];
+    this.#filmCart.shake(resetFormState);
+  };
+
+
 }
