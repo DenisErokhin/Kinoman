@@ -63,7 +63,7 @@ const createPopupInfoTemplate = (state) => {
             <td class="film-details__cell">${release.releaseCountry}</td>
           </tr>
           <tr class="film-details__row">
-            <td class="film-details__term">Genres</td>
+            <td class="film-details__term">${genre.length > 1 ? 'Genres' : 'Genre'}</td>
             <td class="film-details__cell">
               ${getGenreTemplate(genre)}
             </td>
@@ -101,7 +101,6 @@ const createPopupInfoTemplate = (state) => {
 export default class PopupFilmInfoView extends AbstractStatefulView {
   #film = null;
   #comments = null;
-  #changeData = null;
   #commentsLength = null;
 
   constructor(film, comments) {
@@ -139,7 +138,6 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
       isFavorite: this.#film.userDetails.favorite,
     });
     this._callback.favoriteClick();
-    // evt.target.classList.toggle('film-details__control-button--active');
   };
 
   setWatchListClickHandler = (callback) => {
@@ -154,7 +152,6 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
       isWatchlist: this.#film.userDetails.watchlist,
     });
     this._callback.watchListClick();
-    // evt.target.classList.toggle('film-details__control-button--active');
   };
 
   setAlreadyWatchClickHandler = (callback) => {
@@ -169,8 +166,6 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
       isAlreadyWatched: this.#film.userDetails.alreadyWatched,
     });
     this._callback.alreadyWatchedClick();
-
-    // evt.target.classList.toggle('film-details__control-button--active');
   };
 
   setDeleteCommentClickHandler = (callback) => {
@@ -189,8 +184,6 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     this._callback.deleteCommentClick(commentId);
   };
 
-  // static parseStateToComment = () => {
-  // };
   getCommentInfo = () => {
     const commentField = this.element.querySelector('.film-details__comment-input');
     const comment = commentField.value;
@@ -277,9 +270,3 @@ export default class PopupFilmInfoView extends AbstractStatefulView {
     this.#setInnerHandlers();
   };
 }
-
-
-// Comments <span class="film-details__comments-count">${comments.length}</span>
-
-
-// <h3 class="film-details__comments-title">${!comments ? 'Loading...' : `Comments <span class="film-details__comments-count">${comments.length}</span>`}</h3>

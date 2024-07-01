@@ -20,7 +20,6 @@ export default class FilmDetailsPresenter {
     this.#changeData = changeData;
     this.#closeFilmDetails = closeFilmDetails;
     this.#commentsModel.addObserver(this.handleModelEvent);
-
   }
 
   init (film, comments, isCommentLoadingError) {
@@ -102,7 +101,6 @@ export default class FilmDetailsPresenter {
     const newComment = {
       comment,
       emotion,
-      date: new Date().toISOString(),
     };
 
     this.#changeData(

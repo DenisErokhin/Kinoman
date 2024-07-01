@@ -21,6 +21,4 @@ const createNewCommentTemplate = (checkedEmotion, commentText, isDisabled) =>
   </div>`;
 
 
-export {createNewCommentTemplate};
-
-
+export { createNewCommentTemplate };

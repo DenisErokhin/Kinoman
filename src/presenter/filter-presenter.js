@@ -72,10 +72,4 @@ export default class FilterPresenter {
 
     this.#filtersModel.setFilter(UpdateType.MAJOR, typeFilter);
   };
-
-
-  // this.#filterFilms(typeFilter);
-  // this.#clearBoard();
-  // this.#renderBoard();
 }
-

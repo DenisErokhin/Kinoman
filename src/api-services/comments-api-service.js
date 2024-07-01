@@ -22,7 +22,7 @@ export default class CommentsApiService extends ApiService {
 
   addComment = async (comment) => {
     const responce = await this._load({
-      url: `comments/${this.#film.id}`,
+      url: `/comments/${this.#film.id}`,
       method: Method.POST,
       body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -35,13 +35,11 @@ export default class CommentsApiService extends ApiService {
   };
 
   removeComment = async (comment) => {
-    const responce = await this._load({
-      url: `comments/${comment.id}`,
+    await this._load({
+      url: `/comments/${comment.id}`,
       method: Method.DELETE,
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-
-    return responce;
   };
 
   #adaptToServer = (film) => {

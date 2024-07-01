@@ -36,10 +36,6 @@ export default class FilmFilterView extends AbstractView {
     return createFilterTemplate(this.#filters, this.#currentFilterType);
   }
 
-  // checkChangeValue() {
-
-  // }
-
   setFilterClickHandler = (callback) => {
     this._callback.filterClick = callback;
     this.element.addEventListener('click', this.#filterClickHandler);

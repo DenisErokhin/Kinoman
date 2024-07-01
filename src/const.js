@@ -46,4 +46,4 @@ const UserDetailsValue = {
   WATCHLIST: 'watchlist',
 };
 
-export {EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType, UserAction, UpdateType, UserDetailsValue};
+export { EMOTIONS, FilterType, UserStatusValue, UserStatusTitle, SortType, UserAction, UpdateType, UserDetailsValue };

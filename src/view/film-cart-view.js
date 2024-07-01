@@ -1,6 +1,8 @@
 import { humanizeFilmReleaseDateInYear, getMinutesToTime } from '../utils/film.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
+const maxLengthDescription = 140;
+
 const createFilmCartTemplate = (state) => {
   const {film, isDisabled, isFavorite, isWatchlist, isAlreadyWatched} = state;
   const {comments, filmInfo} = film;
@@ -15,7 +17,7 @@ const createFilmCartTemplate = (state) => {
         <span class="film-card__genre">${genre.join(', ')}</span>
       </p>
       <img src="./${poster}" alt="" class="film-card__poster">
-      <p class="film-card__description">${description}</p>
+      <p class="film-card__description">${description.length > maxLengthDescription ?  `${description.slice(0, maxLengthDescription - 1)}...` : description}</p>
       <span class="film-card__comments">${comments.length} comments</span>
     </a>
     <div class="film-card__controls">

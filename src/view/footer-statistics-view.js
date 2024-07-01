@@ -14,4 +14,3 @@ export default class FooterStatisticsView extends AbstractView {
     return getStatisticsTemplate(this.#filmCount);
   }
 }
-

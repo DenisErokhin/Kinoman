@@ -9,4 +9,4 @@ const filter = {
   [FilterType.FAVORITES]: (films) => films.filter((film) => film.userDetails.favorite),
 };
 
-export {filter};
+export { filter };

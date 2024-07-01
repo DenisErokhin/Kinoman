@@ -4,14 +4,10 @@ import { UserAction, UpdateType, UserDetailsValue } from '../const.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
-  #boardContainer = null;
   #filmCart = null;
   #film = null;
   #changeData = null;
-  #changeMode = null;
-  #mode = null;
   #renderFilmDetailsComponent = null;
-  #onEscKeyDown = null;
   #valueActiveButton = null;
 
   constructor(filmListContainer, changeData, renderFilmDetailsComponent) {
@@ -43,10 +39,6 @@ export default class FilmPresenter {
 
     remove(prevFilmCart);
   }
-
-  // resetView = () => {
-  //   // this.closeFilmDetails();
-  // };
 
   handleWatchListClick = () => {
     this.#valueActiveButton = UserDetailsValue.WATCHLIST;
@@ -86,6 +78,4 @@ export default class FilmPresenter {
     this.#film.userDetails[this.#valueActiveButton] = !this.#film.userDetails[this.#valueActiveButton];
     this.#filmCart.shake(resetFormState);
   };
-
-
 }

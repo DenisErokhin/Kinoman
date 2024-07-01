@@ -21,16 +21,9 @@ const createComment = (element, isDisabled, deletedCommentId) => {
 
 export const createCommentTemplate = (elements, isDisabled, deletedCommentId,) => {
 
-
   if (elements.length === 0) {
     return '';
   }
 
-  let newCommentsTemplate = '';
-
-  for (let i = 0; i < elements.length; i++) {
-    newCommentsTemplate += createComment(elements[i], isDisabled, deletedCommentId);
-  }
-
-  return newCommentsTemplate;
+  return elements.map((element) => createComment(element, isDisabled, deletedCommentId)).join('');
 };

@@ -31,4 +31,4 @@ headerProfilePresenter.init();
 footerStatisticsPresenter.init();
 boardPresenter.init();
 
-export {boardPresenter, commentsModel};
+export { boardPresenter, commentsModel };
