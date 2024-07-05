@@ -14,13 +14,10 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
   </a>`;
 };
 
-const createFilterTemplate = (filters, currentFilterType) => {
-  const filtersTemplate = filters.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join('');
-
-  return `<nav class="main-navigation">
-    ${filtersTemplate}
-    </nav>`;
-};
+const createFilterTemplate = (filters, currentFilterType) =>`
+  <nav class="main-navigation">
+  ${filters.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join('')}
+  </nav>`;
 
 export default class FilmFilterView extends AbstractView {
   #filters = null;
@@ -36,23 +33,20 @@ export default class FilmFilterView extends AbstractView {
     return createFilterTemplate(this.#filters, this.#currentFilterType);
   }
 
-  setFilterClickHandler = (callback) => {
-    this._callback.filterClick = callback;
+  setFilterClickHandler = (cb) => {
+    this._callback.filterClick = cb;
     this.element.addEventListener('click', this.#filterClickHandler);
   };
 
   #filterClickHandler = (evt) => {
-    if(evt.target.tagName === 'SPAN') {
-      const activeLink = evt.target.closest('a');
-      this._callback.filterClick(activeLink.dataset.typeFilter);
+    if (evt.target.tagName === 'SPAN') {
+      this._callback.filterClick(evt.target.closest('a').dataset.typeFilter);
       return;
     }
 
-    if(evt.target.tagName !==  'A') {
-      return;
+    if (evt.target.tagName ===  'A') {
+      evt.preventDefault();
+      this._callback.filterClick(evt.target.dataset.typeFilter);
     }
-
-    evt.preventDefault();
-    this._callback.filterClick(evt.target.dataset.typeFilter);
   };
 }

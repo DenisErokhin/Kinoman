@@ -6,10 +6,9 @@ import FilmSortView from '../view/film-sort-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmPresenter from './film-presenter.js';
 import FilmDetailsPresenter from './film-details-presenter.js';
-import { SortType } from '../const.js';
 import { filter } from '../utils/filter.js';
 import { sortFilmByDate, sortFilmByRating } from '../utils/film.js';
-import { UserAction, UpdateType, FilterType } from '../const.js';
+import { UserAction, UpdateType, FilterType, SortType } from '../const.js';
 import NoFilmView from '../view/no-films-view.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
@@ -151,7 +150,6 @@ export default class BoardPresenter {
     this.#filmDetailsPresenter = null;
     this.#selectedFilm = null;
 
-
     document.querySelector('body').classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.onCtrlEnterDown);
     document.removeEventListener('keydown', this.onEscKeyDown);
@@ -196,7 +194,7 @@ export default class BoardPresenter {
         try {
           await this.#commentsModel.addComment(updateType, updateComment);
         } catch (err) {
-          this.#filmDetailsPresenter.setAborting();
+          this.#filmDetailsPresenter.setAborting(userAction);
         }
         break;
       case UserAction.REMOVE_COMMENT:
@@ -282,7 +280,6 @@ export default class BoardPresenter {
   };
 
   #renderBoard = () => {
-
     const films = this.films;
     const filmCount = films.length;
 

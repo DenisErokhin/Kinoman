@@ -49,18 +49,18 @@ export default class FilmCartView extends AbstractStatefulView {
     return createFilmCartTemplate(this._state);
   }
 
-  setFavoriteClickHandler = (callback) => {
-    this._callback.favoriteClick = callback;
+  setFavoriteClickHandler = (cb) => {
+    this._callback.favoriteClick = cb;
     this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#favoriteClickHandler);
   };
 
-  setWatchListClickHandler = (callback) => {
-    this._callback.watchListClick = callback;
+  setWatchListClickHandler = (cb) => {
+    this._callback.watchListClick = cb;
     this.element.querySelector('.film-card__controls-item--add-to-watchlist').addEventListener('click', this.#watchListClickHandler);
   };
 
-  setAlreadyWatchClickHandler = (callback) => {
-    this._callback.alreadyWatchedClick = callback;
+  setAlreadyWatchClickHandler = (cb) => {
+    this._callback.alreadyWatchedClick = cb;
     this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.#alreadyWatchClickHandler);
   };
 
@@ -88,8 +88,8 @@ export default class FilmCartView extends AbstractStatefulView {
     this._callback.alreadyWatchedClick();
   };
 
-  setCloseClickHandler = (callback) => {
-    this._callback.click = callback;
+  setCloseClickHandler = (cb) => {
+    this._callback.click = cb;
     this._filmCartLink = this.element.querySelector('.film-card__link');
     this._filmCartLink.addEventListener('click', this.#closeClickHandler);
   };

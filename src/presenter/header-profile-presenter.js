@@ -1,6 +1,6 @@
 import HeaderProfileView from '../view/header-profile-view.js';
 import { getUserStatus } from '../utils/user.js';
-import { remove, render, replace } from '../framework/render';
+import { remove, render, replace } from '../framework/render.js';
 
 export default class HeaderProfilePresenter {
   #container = null;

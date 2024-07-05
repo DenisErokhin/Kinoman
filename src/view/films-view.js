@@ -5,7 +5,6 @@ const createFilmContainerTemplate = () => `
   </section>`;
 
 export default class FilmsComponentView extends AbstractView {
-
   get template() {
     return createFilmContainerTemplate();
   }

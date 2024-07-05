@@ -14,8 +14,6 @@ export default class CommentsModel extends Observable {
   }
 
   init = async (film) => {
-    this.#comments = [];
-
     try {
       this.#comments = await this.#commentsApiService.getComments(film);
     } catch (err) {
@@ -26,7 +24,6 @@ export default class CommentsModel extends Observable {
   };
 
   addComment = async (updateType, update) => {
-
     try {
       const {movie, comments} = await this.#commentsApiService.addComment(update);
       this.#comments = [...comments];

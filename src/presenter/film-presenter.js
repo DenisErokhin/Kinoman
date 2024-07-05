@@ -33,7 +33,7 @@ export default class FilmPresenter {
       return;
     }
 
-    if(this.#filmListContainer.element.contains(prevFilmCart.element)) {
+    if (this.#filmListContainer.element.contains(prevFilmCart.element)) {
       replace(this.#filmCart, prevFilmCart);
     }
 
@@ -58,7 +58,7 @@ export default class FilmPresenter {
     this.#changeData(UserAction.UPDATE_FILM, UpdateType.MINOR, this.#film);
   };
 
-  destroy() {
+  destroy () {
     remove(this.#filmCart);
   }
 

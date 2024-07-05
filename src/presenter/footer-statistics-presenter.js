@@ -28,11 +28,10 @@ export default class FooterStatisticsPresenter {
 
     replace(this.#footerStatisticsComponent, prevfooterStatisticsComponent);
     remove(prevfooterStatisticsComponent);
-
   }
 
   #modelEventHandler = (updateType) => {
-    if(updateType === UpdateType.INIT) {
+    if (updateType === UpdateType.INIT) {
       this.init();
     }
   };

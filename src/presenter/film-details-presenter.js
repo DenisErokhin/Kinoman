@@ -11,7 +11,6 @@ export default class FilmDetailsPresenter {
   #film = null;
   #comments = null;
   #deletedComment = null;
-  #deletedCommentId = null;
   #valueActiveButton = null;
 
   constructor(boardContainer, commentsModel, changeData, closeFilmDetails) {
@@ -47,7 +46,6 @@ export default class FilmDetailsPresenter {
   }
 
   handleModelEvent = (updateType, update) => {
-
     if (update) {
       this.#film = update;
     }
@@ -56,17 +54,16 @@ export default class FilmDetailsPresenter {
   };
 
   checkValidComment = (commentField, emotion) => {
-    if (commentField.value.trim() === '') {
-      commentField.setCustomValidity('Комментарий не может быть пустым');
-      return false;
+    let warningText = '';
+
+    if (!commentField.value.trim()) {
+      warningText = 'Комментарий не может быть пустым';
+    } else if (!emotion) {
+      warningText = 'Выберите эмоцию';
     }
 
-    if (emotion === null) {
-      commentField.setCustomValidity('Выберите эмоцию');
-      return false;
-    }
-
-    return true;
+    commentField.setCustomValidity(warningText);
+    return warningText;
   };
 
   destroy = () => {
@@ -94,7 +91,7 @@ export default class FilmDetailsPresenter {
   createComment = () => {
     const {commentField, comment, emotion} = this.#filmCartDetails.getCommentInfo();
 
-    if (!this.checkValidComment(commentField, emotion)) {
+    if (this.checkValidComment(commentField, emotion)) {
       return;
     }
 
@@ -111,15 +108,13 @@ export default class FilmDetailsPresenter {
   };
 
   handleCommentDeleteClick = (commentId) => {
-    const deletedComment = this.#commentsModel.comments.find((comment) => comment.id === commentId);
-    this.#deletedComment = deletedComment;
-    this.#deletedCommentId = commentId;
+    this.#deletedComment = this.#commentsModel.comments.find((comment) => comment.id === commentId);
 
     this.#changeData(
       UserAction.REMOVE_COMMENT,
       UpdateType.PATCH,
       this.#film,
-      deletedComment
+      this.#deletedComment,
     );
   };
 
@@ -150,19 +145,19 @@ export default class FilmDetailsPresenter {
       this.#filmCartDetails.fixScrollPosition();
     };
 
-    if (userAction === UserAction.REMOVE_COMMENT) {
-      resetFormState();
-      document.getElementById(this.#deletedCommentId).classList.add('shake');
-      return;
+    switch (userAction) {
+      case UserAction.UPDATE_FILM:
+        this.#film.userDetails[this.#valueActiveButton] = !this.#film.userDetails[this.#valueActiveButton];
+        resetFormState();
+        document.querySelector('.film-details__controls').classList.add('shake');
+        break;
+      case UserAction.REMOVE_COMMENT:
+        resetFormState();
+        document.getElementById(this.#deletedComment.id).classList.add('shake');
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#filmCartDetails.shake(resetFormState);
+        break;
     }
-
-    if (userAction === UserAction.UPDATE_FILM) {
-      this.#film.userDetails[this.#valueActiveButton] = !this.#film.userDetails[this.#valueActiveButton];
-      resetFormState();
-      document.querySelector('.film-details__controls').classList.add('shake');
-      return;
-    }
-
-    this.#filmCartDetails.shake(resetFormState);
   };
 }

@@ -11,7 +11,6 @@ import FooterStatisticsPresenter from './presenter/footer-statistics-presenter.j
 const AUTHORIZATION = 'Basic sdgfasdgdgdgdgeded';
 const END_POINT = 'https://17.ecmascript.htmlacademy.pro/cinemaddict';
 
-
 const siteMainElement = document.querySelector('.main');
 const pageHeader = document.querySelector('.header');
 const pageFooter = document.querySelector('.footer');
@@ -20,13 +19,11 @@ const filtersModel = new FilterModel(filmsModel);
 const commentsModel = new CommentsModel(new CommentsApiService(END_POINT, AUTHORIZATION));
 const headerProfilePresenter = new HeaderProfilePresenter(pageHeader, filmsModel);
 const footerStatisticsPresenter = new FooterStatisticsPresenter(pageFooter, filmsModel);
-
 const filterPresenter = new FilterPresenter(siteMainElement, filmsModel, filtersModel);
-filterPresenter.init();
-
 const boardPresenter = new BoardPresenter(siteMainElement, filmsModel, filtersModel, commentsModel);
 
 filmsModel.init();
+filterPresenter.init();
 headerProfilePresenter.init();
 footerStatisticsPresenter.init();
 boardPresenter.init();

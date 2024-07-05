@@ -19,8 +19,7 @@ const createComment = (element, isDisabled, deletedCommentId) => {
     </li>`;
 };
 
-export const createCommentTemplate = (elements, isDisabled, deletedCommentId,) => {
-
+export const createCommentTemplate = (elements, isDisabled, deletedCommentId) => {
   if (elements.length === 0) {
     return '';
   }
